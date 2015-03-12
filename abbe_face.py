@@ -1,21 +1,25 @@
 #!/usr/bin/env python
 
+#
+# Controls the pan / tilt of Abbe's face
+#
+
 import argparse
 import random
 import rospy
 import baxter_interface
 from abbe_errors import Abbe_Error
+from abbe_emotion import Abbe_Emotions
 
 class Abbe_Face(object):
 	
 
 	def __init__(self):
 		rospy.init_node("abbe_face")
-		self._head = baxter_interface.Head()
-		self._emotion = "awake" #default
+		self._head = baxter_interface.Head()		
+		self._emotion = Abbe_Emotions()
 		self._error = Abbe_Error() #for throwing excpetions
-		
-	
+			
 	def nod(self):
 		self._head.command_nod()
 
@@ -37,17 +41,7 @@ class Abbe_Face(object):
 	def center(self):
 		self.pan(0.0)
 
-	def emotion_is_valid(self,emotion_val):
-		valid_emotions = array("awake","confused","happy")
-		if(emotion_val in valid_emotions):
-			return True
-		return False
-
-	def emotion(self,emotion_val):
-		if(not self.emotion_is_valid(emotion_val)):
-			self._error.error("unknown emotion: " + str(emotion_val))
 	
-		self._emotion = emotion_val
 		
 
 if __name__ == '__main__':
