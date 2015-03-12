@@ -4,7 +4,7 @@ import argparse
 import random
 import rospy
 import baxter_interface
-from baxter_interface import CHECK_VERSION
+from abbe_errors import Abbe_Error
 
 class Abbe_Face(object):
 	
@@ -13,6 +13,7 @@ class Abbe_Face(object):
 		rospy.init_node("abbe_face")
 		self._head = baxter_interface.Head()
 		self._emotion = "awake" #default
+		self._error = Abbe_Error() #for throwing excpetions
 		
 	
 	def nod(self):
@@ -42,8 +43,11 @@ class Abbe_Face(object):
 			return True
 		return False
 
-	def emotion(self,howshefeels):
-		self._emotion = howshefeels
+	def emotion(self,emotion_val):
+		if(not self.emotion_is_valid(emotion_val)):
+			self._error.error("unknown emotion: " + str(emotion_val))
+	
+		self._emotion = emotion_val
 		
 
 if __name__ == '__main__':
@@ -54,5 +58,6 @@ if __name__ == '__main__':
 	face.center()
 	face.nod()
 	face.right()
+	
 	face.nod()
 		
