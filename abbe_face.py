@@ -19,9 +19,12 @@ class Abbe_Face(object):
 		self._head = baxter_interface.Head()		
 		self._emotion = Abbe_Emotions()
 		self._error = Abbe_Error() #for throwing excpetions
+		self.pan(0.0) #default
 			
 	def nod(self):
+		self._emotion.emotion("happy")
 		self._head.command_nod()
+		self._emotion.emotion("awake")
 
 	def pan(self,angle):
 		control_rate = rospy.Rate(100)
@@ -33,10 +36,14 @@ class Abbe_Face(object):
 		command_rate.sleep()
 	
 	def left(self):
+		self._emotion.eye_direction("left")
 		self.pan(0.7)
+		self._emotion.eye_direction("center")
 
 	def right(self):
+		self._emotion.eye_direction("right")
 		self.pan(-0.7)
+		self._emotion.eye_direction("center")
 
 	def center(self):
 		self.pan(0.0)
@@ -54,4 +61,5 @@ if __name__ == '__main__':
 	face.right()
 	
 	face.nod()
+	rospy.spin()
 		
