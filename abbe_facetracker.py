@@ -62,8 +62,6 @@ class Abbe_FaceTracker(object):
 			cv2.imshow('Head Camera', img)
 		
 		self.find_a_face(img)
-		#self._faceTracker.update(img)
-                #faces = self._faceTracker.faces
 
 	def find_a_face(self, img):
 		if(self._currently_panning):
