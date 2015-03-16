@@ -29,7 +29,7 @@ class Abbe_Gripper(object):
 
 	def open(self):
 		self._gripper.open(block=True)
-
+Ahh 
 
 if __name__ == '__main__':
 	rospy.init_node("abbe_gripper")
