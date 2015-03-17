@@ -65,14 +65,14 @@ class Abbe_Face(object):
 		
 
 #if __name__ == '__main__':
+#	rospy.init_node('Abbe_Face', anonymous=True)
 #	face = Abbe_Face()
 #	face.nod()
 #	face.left()
 #	face.nod()
 #	face.center()
 #	face.nod()
-#	face.right()
-	
+#	face.right()	
 #	face.nod()
 #	rospy.spin()
 		
