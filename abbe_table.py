@@ -58,6 +58,12 @@ class Abbe_Table(object):
 		self._ik.set_left(_pose.x,_pose.y,self.ret_height_for_block_pickup())
 
 	def determine_height_of_table(self):
+		self.default()
+
+		#next 2 lines are a hack to save time... remove them to recalibrate
+		self._Z_TABLE_HEIGHT = -0.17
+		return True
+
 		_table_height = self._Z_START
 		
 		#slow down
@@ -75,12 +81,12 @@ class Abbe_Table(object):
 		print "Table Height determined at: "  + str(self._Z_TABLE_HEIGHT)
 		self._ik.set_speed("left") #reset speed to default
 	
-if __name__ == '__main__':
-    rospy.init_node('Abbe_Table', anonymous=True)
-    at = Abbe_Table()
-    at.default()
-    at.determine_height_of_table()
-    at.default()
-    at.moveto_height_for_blockpickup("left")
-    at.default()
-    at.moveto_height_for_blockpickup("left")
+#if __name__ == '__main__':
+#    rospy.init_node('Abbe_Table', anonymous=True)
+#    at = Abbe_Table()
+#    at.default()
+#    at.determine_height_of_table()
+#    at.default()
+#    at.moveto_height_for_blockpickup("left")
+#    at.default()
+#    at.moveto_height_for_blockpickup("left")

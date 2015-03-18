@@ -5,6 +5,7 @@ import random
 
 import numpy as np
 import math
+from square import Square
 
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
@@ -13,18 +14,22 @@ from scipy.spatial.distance import euclidean
 import rospy
 from sensor_msgs.msg import Image, Range
 import baxter_interface
+from abbe_table import Abbe_Table
 
-class Abby_Block_finder(object):
+class Abbe_Block_Finder(object):
 	SHAPE_STD_LIMIT = 3.0
 	SHAPE_AREA_PERCENT_LIMIT = 0.2
 	SHAPE_MIN_DISTANCE = 32
 	SHAPE_ARC = 0.025
 	RES_PERCENT = 0.66
 	CANNY_DILATE = 3
+	BLOCKS = []
 
 	def __init__(self):
 		self._blocks_found = 0
 		self._bridge = CvBridge()
+		self._table = Abbe_Table()
+		self._table.default()
 		cv2.namedWindow('Left Arm')
 
 		# Instantiate all three cameras
@@ -41,8 +46,8 @@ class Abby_Block_finder(object):
 		self._left_camera_sub = rospy.Subscriber(
            		 '/cameras/left_hand_camera/image', 
             		Image,
-            		self.left_img_received)
-	
+            		self.left_img_received)	
+
 	def left_img_received(self,data):
 		try:
 			img = self._bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
@@ -59,7 +64,7 @@ class Abby_Block_finder(object):
 	def _find_blocks(self, img):
 		contours = self._find_contours(img)
 		squares = self._find_squares_from_contours(contours)
-		print squares
+		self.BLOCKS = squares
 
 	def _find_contours(self, img):
 		# Detect contours in the image.
@@ -79,6 +84,7 @@ class Abby_Block_finder(object):
 	
 	def _find_squares_from_contours(self, contours):
 		squares = []
+
 		for c in contours:
 		    # Drop anything that doesn't have four corners (obviously.)	             
 
@@ -103,12 +109,12 @@ class Abby_Block_finder(object):
 		    area_dif = abs(square_area - area)
 		    if not area_dif <= square_area * self.SHAPE_AREA_PERCENT_LIMIT:
 		        continue
-
-		    #squares.append(Square(c / self.RES_PERCENT))
+			
+		    squares.append(Square(c))
 
 		return squares
 
-if __name__ == '__main__':
-    rospy.init_node('Abbe_Block_finder', anonymous=True)
-    Abbe_BF = 	Abby_Block_finder()	
-    rospy.spin()
+#if __name__ == '__main__':
+#    rospy.init_node('Abbe_Block_finder', anonymous=True)
+#    Abbe_BF = 	Abbe_Block_Finder()	
+#    rospy.spin()
