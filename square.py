@@ -12,7 +12,7 @@ class Square(object):
 			self.moments['m10'] / self.moments['m00'],
 			self.moments['m01'] / self.moments['m00']])
 		self.x = self.center[0] - 60
-		self.y = self.center[1] + 120
+		self.y = self.center[1] + 100
 
 	def pose(self):
 		return [self.x,self.y]

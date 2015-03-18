@@ -21,12 +21,14 @@ from abbe_table import Abbe_Table
 from abbe_ik import Abbe_IK
 from abbe_block_finder import Abbe_Block_Finder
 from abbe_gripper import Abbe_Gripper
+from abbe_face import Abbe_Face
 
 
 class Abbe_Block_Demo(object):
 	TOLERANCE_FOR_BLOCK_POSE = 15	
 	_Y_BACKSTEP = 0.01
 	_X_BACKSTEP = 0.01
+	_BLOCK_STACK_COUNT = 0
 
 	def __init__(self):
 		self._table = Abbe_Table()
@@ -34,22 +36,44 @@ class Abbe_Block_Demo(object):
 		self._ik = Abbe_IK()	
 		self._block_finder = Abbe_Block_Finder()
 		self._left_gripper = Abbe_Gripper()
+		self._face = Abbe_Face()
 
 	def pickup_block(self):
 		if(len(self._block_finder.BLOCKS) > 0):
 			print "block found"
 			block_c = self._block_finder.BLOCKS[0].pose()
 			if self.center_on_block(block_c): #returns True when centered
+				self._face.nod()
 				print "pick up now"
 				self._left_gripper.open()
+				self._ik.set_speed("left",0.5)
 				self._table.moveto_height_for_blockpickup("left")
-				self._left_gripper.close()
+				self._left_gripper.close()							
+				self._table.move_straight_up_height_default("left") #go straight up to avoid hitting anything else
+				self.stack_block("left")
 				self._ik.set_speed("left") #reset speed
-				self._table.default()
-				time.sleep(10)					
+				time.sleep(10)	
+		#else:
+			#print "no block found"				
 				
 		return True
-	
+
+	def stack_block(self,limb):
+		self._face.left()
+		self._ik.set_speed(limb,0.7)
+		self._table.droppoint(self._BLOCK_STACK_COUNT)
+		self._ik.set_speed(limb,0.2)
+		_success = self._table.moveto_height_for_blockdropoff("left",self._BLOCK_STACK_COUNT)	
+		self._BLOCK_STACK_COUNT = self._BLOCK_STACK_COUNT + 1		
+		self._left_gripper.open()
+		time.sleep(1) #make sure were open all the way before moving fast
+		self._ik.set_speed(limb,0.7)
+		self._table.move_straight_up_height_default("left") #go straight up to avoid hitting any blocks
+		self._face.center()
+		self._table.default()
+		
+		self._ik.set_speed(limb)
+
 	def center_on_block(self,block_pose,limb = "left"):
 		_x = block_pose[0]
 		_y = block_pose[1]

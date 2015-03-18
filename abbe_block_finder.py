@@ -93,22 +93,22 @@ class Abbe_Block_Finder(object):
 
 		    # Find the distances between each side
 		    sides = []
-		    for i in range(len(c)):
-		        sides.append((c[i][0], c[(i + 1) % len(c)][0]))
-		    d = [euclidean(s[0], s[1]) for s in sides]
+		    #for i in range(len(c)):
+		    #    sides.append((c[i][0], c[(i + 1) % len(c)][0]))
+		    #d = [euclidean(s[0], s[1]) for s in sides]
 
 		    # Drop any contours that doesn't have about the same size sides.
-		    d_std = np.std(d)
-		    if not (d_std > 0.0 and d_std < self.SHAPE_STD_LIMIT):
-		        continue
+		    #d_std = np.std(d)
+		    #if not (d_std > 0.0 and d_std < self.SHAPE_STD_LIMIT):
+		    #    continue
 
 		    # Drop any contours where the area isn't about the same value as a square with sides
 		    # equaling to the average side length.
-		    area = cv2.contourArea(c) 
-		    square_area = np.mean(d) ** 2
-		    area_dif = abs(square_area - area)
-		    if not area_dif <= square_area * self.SHAPE_AREA_PERCENT_LIMIT:
-		        continue
+		    #area = cv2.contourArea(c) 
+		    #square_area = np.mean(d) ** 2
+		    #area_dif = abs(square_area - area)
+		    #if not area_dif <= square_area * self.SHAPE_AREA_PERCENT_LIMIT:
+		    #    continue
 			
 		    squares.append(Square(c))
 
