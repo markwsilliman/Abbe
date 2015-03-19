@@ -29,3 +29,6 @@ class Abbe_Gripper(object):
 
 	def open(self):
 		self._gripper.open(block=True)
+
+	def gripping(self):
+		return self._gripper.gripping()

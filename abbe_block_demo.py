@@ -40,23 +40,33 @@ class Abbe_Block_Demo(object):
 
 	def pickup_block(self):
 		if(len(self._block_finder.BLOCKS) > 0):
-			print "block found"
+			#print "block found"
 			block_c = self._block_finder.BLOCKS[0].pose()
 			if self.center_on_block(block_c): #returns True when centered
 				self._face.nod()
-				print "pick up now"
+				#print "pick up now"
 				self._left_gripper.open()
-				self._ik.set_speed("left",0.5)
+				self._ik.set_speed("left",0.5)				
 				self._table.moveto_height_for_blockpickup("left")
-				self._left_gripper.close()							
+				self._left_gripper.close()	
+									
 				self._table.move_straight_up_height_default("left") #go straight up to avoid hitting anything else
-				self.stack_block("left")
+
+				_did_we_grip_block = self.did_the_gripper_pickup_a_block()
+
+				if(_did_we_grip_block):					
+					self.stack_block("left")
+				else:
+					self._face.confused()
+
 				self._ik.set_speed("left") #reset speed
-				time.sleep(10)	
 		#else:
 			#print "no block found"				
 				
 		return True
+
+	def did_the_gripper_pickup_a_block(self):
+		return self._left_gripper.gripping()
 
 	def stack_block(self,limb):
 		self._face.left()
@@ -75,6 +85,7 @@ class Abbe_Block_Demo(object):
 		self._ik.set_speed(limb)
 
 	def center_on_block(self,block_pose,limb = "left"):
+		return True
 		_x = block_pose[0]
 		_y = block_pose[1]
 		_hand_pose = self._ik.get_pose(limb)

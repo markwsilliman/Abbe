@@ -58,7 +58,7 @@ class Abbe_Table(object):
 		return self._Z_TABLE_HEIGHT
 
 	def ret_height_for_block_pickup(self):
-		return self.ret_height_of_table() + 0.01
+		return self.ret_height_of_table() + 0.03
 
 	def move_straight_up_height_default(self,limb):
 		_pose = self._ik.get_pose(limb)
@@ -73,15 +73,12 @@ class Abbe_Table(object):
 
 		#slow down
 		self._ik.set_speed("left",0.4)
-		_back_step = self._Z_BACKSTEP
-		if(block_count < 1):
-			_back_step = _back_step * 3 #go faster for first block
+		_back_step = self._Z_BACKSTEP		
 
-		if(block_count > 0):
-			self._ik.set_speed("left",0.1)
+		self._ik.set_speed("left",0.1)
 
 		_table_height = _pose.z
-
+		
 		_success = True
 		while _success and not rospy.is_shutdown() and self._ik.get_force("left").z > -3:
 			_table_height = _table_height - _back_step
