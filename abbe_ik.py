@@ -101,6 +101,9 @@ class Abbe_IK(object):
 	def set_left(self,x,y,z,timeout=15,wait=True):
 		return self.ik_moveto_position("left",(x,y,z),(0,math.pi,math.pi*-1.0),wait,timeout)
 
+	def set_right(self,x,y,z,timeout=15,wait=True):
+		return self.ik_moveto_position("right",(x,y,z),(0,math.pi,math.pi*-1.0),wait,timeout)
+
 	def set_timeout(self,limb,timeout=10):
 		if limb == "left":
 			return self._left_arm.set_command_timeout(timeout)

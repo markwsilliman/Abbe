@@ -10,6 +10,7 @@ import argparse
 import struct
 import sys
 from abbe_ik import Abbe_IK
+import threading
 
 from geometry_msgs.msg import (
     PoseStamped,
@@ -50,7 +51,30 @@ class Abbe_Table(object):
 		if(block_count <= 2):
 			_tmp_height = 0.0
 
-		self._ik.set_left(0.5,0.5,_tmp_height) #-0.18
+		
+		self._ik.set_left(0.5,0.5,_tmp_height) #-0.18		
+
+	def load_block(self):
+		self._load_block = threading.Timer(0, self.load_block_so_were_ready)
+		self._load_block.start()
+		
+	def load_block_so_were_ready(self):
+		self._ik.set_speed("right",0.7)
+		self._ik.set_right(0.5,-0.5,0.2)
+		self._ik.set_right(0.5,-0.5,0.0)
+		#activate suction
+		self._ik.set_right(0.5,-0.5,0.2)
+
+	def reload(self):
+		self._sch_reload = threading.Timer(0, self.grab_the_next_block)
+		self._sch_reload.start()
+
+	def grab_the_next_block(self):
+		self._ik.set_speed("right",0.7)		
+		
+		#only do the following if you aren't loaded yet
+		self._ik.set_right(0.5,0.0,0.0)
+		self._ik.set_right(0.5,-0.5,0.2)
 
 	def ret_height_of_table(self):
 		if(self._Z_TABLE_HEIGHT == 0.0):

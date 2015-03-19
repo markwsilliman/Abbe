@@ -23,7 +23,7 @@ class Abbe_Gripper(object):
 	
 	def __init__(self):
 		self._gripper = Gripper('left')
-		self._gripper.calibrate()
+		self._gripper.open()
 	def close(self):
 		self._gripper.close(block=True)
 
