@@ -33,18 +33,26 @@ from baxter_core_msgs.srv import (
     SolvePositionIK,
     SolvePositionIKRequest,
 )
+from sensor_msgs.msg import Range
+
+
 
 class Abbe_Table(object):
 	_Z_START = 0.0
 	_Z_BACKSTEP = 0.01
 	_Z_ACCEPT_FORCE = -10.0
 	_Z_TABLE_HEIGHT = 0.0
+	_Z_CURRENT_HEIGHT_FROM_IR_SENSOR = 0.0
 
 	def __init__(self):
-		self._ik = Abbe_IK()	
+		self._ik = Abbe_IK()
+		rospy.Subscriber("/robot/range/left_hand_range/state", Range, self.left_range_callback)
 		
 	def default(self):
-		self._ik.set_left(0.5,0.0,0.0)
+		self._ik.set_left(0.5,0.0,0.0)	
+
+	def left_range_callback(self,data):
+		self._Z_CURRENT_HEIGHT_FROM_IR_SENSOR = data.range
 
 	def droppoint(self,block_count = 10):
 		_tmp_height = 0.2
@@ -86,6 +94,9 @@ class Abbe_Table(object):
 
 	def move_straight_up_height_default(self,limb):
 		_pose = self._ik.get_pose(limb)
+		self._ik.set_speed(limb,0.1)
+		self._ik.set_left(_pose.x,_pose.y,_pose.z + 0.1) #slowly up a little so we dont knock blocks
+		self._ik.set_speed(limb,0.7)
 		self._ik.set_left(_pose.x,_pose.y,0.5)
 
 	def moveto_height_for_blockpickup(self,limb):
@@ -94,17 +105,23 @@ class Abbe_Table(object):
 
 	def moveto_height_for_blockdropoff(self,limb,block_count):
 		_pose = self._ik.get_pose(limb)
+		_speed_reduced = False
 
 		#slow down
 		self._ik.set_speed("left",0.4)
-		_back_step = self._Z_BACKSTEP		
-
-		self._ik.set_speed("left",0.1)
-
+		_back_step = self._Z_BACKSTEP * 3		
+		
 		_table_height = _pose.z
 		
 		_success = True
 		while _success and not rospy.is_shutdown() and self._ik.get_force("left").z > -3:
+			#print self._Z_CURRENT_HEIGHT_FROM_IR_SENSOR
+			if((self._Z_CURRENT_HEIGHT_FROM_IR_SENSOR < 0.18 or block_count > 0) and not _speed_reduced):
+				self._ik.set_speed("left",0.1)
+				_speed_reduced = True
+				_back_step = self._Z_BACKSTEP
+				#print "slow er down!"
+
 			_table_height = _table_height - _back_step
 			_success = self._ik.set_left(_pose.x,_pose.y,_table_height,True,1)	
 

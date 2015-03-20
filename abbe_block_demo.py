@@ -90,7 +90,7 @@ class Abbe_Block_Demo(object):
 		self._BLOCK_STACK_COUNT = self._BLOCK_STACK_COUNT + 1		
 		self._left_gripper.open()
 		time.sleep(1) #make sure were open all the way before moving fast
-		self._ik.set_speed(limb,0.7)
+		
 		self._table.move_straight_up_height_default("left") #go straight up to avoid hitting any blocks
 		self._face.center()
 		self._table.default()
