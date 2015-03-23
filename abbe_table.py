@@ -64,7 +64,7 @@ class Abbe_Table(object):
 
 	def load_block(self):
 		self._load_block = threading.Timer(0, self.load_block_so_were_ready)
-		self._load_block.start()
+		#self._load_block.start()
 		
 	def load_block_so_were_ready(self):
 		self._ik.set_speed("right",0.7)
@@ -75,7 +75,7 @@ class Abbe_Table(object):
 
 	def reload(self):
 		self._sch_reload = threading.Timer(0, self.grab_the_next_block)
-		self._sch_reload.start()
+		#self._sch_reload.start()
 
 	def grab_the_next_block(self):
 		self._ik.set_speed("right",0.7)		
