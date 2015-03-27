@@ -31,12 +31,13 @@ class Abbe_Block_Finder(object):
 		self._table = Abbe_Table()
 		self._table.default()
 		cv2.namedWindow('Left Arm')
+		cv2.namedWindow('Right Arm')
 
 		# Instantiate all three cameras
 		# Only 2 cameras may be on at one time
 		try:
-			self._right_camera = baxter_interface.CameraController('right_hand_camera')
-			self._right_camera.close()
+			self._head_camera = baxter_interface.CameraController('head_camera')
+			self._head_camera.close()
 		except Exception:
 			pass
 
@@ -47,6 +48,24 @@ class Abbe_Block_Finder(object):
            		 '/cameras/left_hand_camera/image', 
             		Image,
             		self.left_img_received)	
+
+		self._right_camera = baxter_interface.CameraController('right_hand_camera')		
+		self._right_camera.open()
+
+		self._right_camera_sub = rospy.Subscriber(
+           		 '/cameras/right_hand_camera/image', 
+            		Image,
+            		self.right_img_received)	
+
+	def right_img_received(self,data):
+		try:
+			img = self._bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
+		except CvBridgeError, e:
+			print e
+
+		img = cv2.resize(img, (640, 400))
+		if cv2.waitKey(1) == -1:
+			cv2.imshow('Right Arm', img)
 
 	def left_img_received(self,data):
 		try:

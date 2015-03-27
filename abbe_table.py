@@ -67,6 +67,7 @@ class Abbe_Table(object):
 		#self._load_block.start()
 		
 	def load_block_so_were_ready(self):
+		return False
 		self._ik.set_speed("right",0.7)
 		self._ik.set_right(0.5,-0.5,0.2)
 		self._ik.set_right(0.5,-0.5,0.0)
@@ -78,6 +79,7 @@ class Abbe_Table(object):
 		#self._sch_reload.start()
 
 	def grab_the_next_block(self):
+		return False
 		self._ik.set_speed("right",0.7)		
 		
 		#only do the following if you aren't loaded yet
