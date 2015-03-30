@@ -94,6 +94,7 @@ class Abbe_IK(object):
 		limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
 		return limb_joints
 	    else:
+		print pose
 		print("INVALID POSE - No Valid Joint Solution Found.")
 
 	    return 0

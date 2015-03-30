@@ -35,15 +35,15 @@ class Abbe_Block_Demo(object):
 		self._table.determine_height_of_table()
 		self._ik = Abbe_IK()	
 		self._block_finder = Abbe_Block_Finder()
+		self._table.default_right()
 		self._left_gripper = Abbe_Gripper()
-		self._face = Abbe_Face()
+		self._face = Abbe_Face()	
 
 	def pickup_block(self):
-		if(len(self._block_finder.BLOCKS) > 0):
+		if self.load_a_new_block(): #len(self._block_finder.BLOCKS) > 0
 			#print "block found"
-			block_c = self._block_finder.BLOCKS[0].pose()
-			if self.center_on_block(block_c): #returns True when centered
-				self._table.load_block()
+			#block_c = self._block_finder.BLOCKS[0].pose()
+			if True: #returns True when centered -- self.center_on_block(block_c)
 				self._face.nod()
 				#print "pick up now"
 				self._left_gripper.open()
@@ -58,25 +58,53 @@ class Abbe_Block_Demo(object):
 					self._table.reload() #non-blocking	
 					self._table.move_straight_up_height_default("left") #go straight up to avoid hitting anything else			
 					self.stack_block("left")
-				else:
-					self._face.confused()
-					self._table.move_straight_up_height_default("left")
-					self._table.droppoint(10) #out of the way for a reload
-
-					#load block using blocking methods
-					self._table.load_block_so_were_ready()
-					self._table.grab_the_next_block()
-
-					#move left hand back so were ready for next pickup					
-					self._table.default()
-					
+																	
 					
 
-				self._ik.set_speed("left") #reset speed
-		#else:
-			#print "no block found"				
+				self._ik.set_speed("left") #reset speed			
 				
 		return True
+
+	def load_a_new_block(self):
+		#move left hand out of the way
+
+		success = True
+
+		if self._left_gripper.gripping(False):	
+			return True
+
+		self._table.droppoint() #out of the way for a
+
+		#load block using blocking methods
+		if not self._left_gripper.gripping(False):	
+			self._left_gripper.open(False)
+			self._face.awake()
+			self._face.right()
+			self._table.load_block_so_were_ready()
+			self._left_gripper.close(False)
+				
+		if self._left_gripper.gripping(False):						
+			self._table.move_right_hand_up_some_after_grab()
+			self._face.center()
+			self._table.default_right_dropoff_initial()
+			self._table.moveto_height_for_block_reload()
+			self._left_gripper.open(False)
+			#get right out  of the way
+			self._face.right()
+			self._table.move_right_straight_up_height_default()
+			self._table.default_right()
+		else:
+			self._table.move_right_straight_up_height_default()
+			self._face.confused()
+			success = False
+
+		if success:
+			self._face.center()
+			self._table.default()
+		else:
+			self._table.move_right_hand_up_some_after_grab()
+
+		return success
 
 	def did_the_gripper_pickup_a_block(self):
 		return self._left_gripper.gripping()
@@ -93,8 +121,6 @@ class Abbe_Block_Demo(object):
 		
 		self._table.move_straight_up_height_default("left") #go straight up to avoid hitting any blocks
 		self._face.center()
-		self._table.default()
-		
 		self._ik.set_speed(limb)
 
 	def center_on_block(self,block_pose,limb = "left"):
@@ -133,6 +159,7 @@ class Abbe_Block_Demo(object):
 
 if __name__ == '__main__':
     rospy.init_node('Abbe_Block_Demo', anonymous=True)
-    abd = Abbe_Block_Demo()
+    abd = Abbe_Block_Demo()	
+
     while(not rospy.is_shutdown()):
 	abd.pickup_block()

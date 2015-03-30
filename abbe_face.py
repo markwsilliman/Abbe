@@ -33,7 +33,10 @@ class Abbe_Face(object):
 			return False
 		self.pan(self._pan_value - 0.1)
 		return True
-	
+
+	def awake(self):
+		self._emotion.emotion("awake")	
+
 	def confused(self):
 		self._emotion.emotion("confused")
 		

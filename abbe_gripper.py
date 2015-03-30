@@ -24,11 +24,24 @@ class Abbe_Gripper(object):
 	def __init__(self):
 		self._gripper = Gripper('left')
 		self._gripper.calibrate()
-	def close(self):
-		self._gripper.close(block=True)
+		self._gripper_right = Gripper('right')
+		self._gripper_right.calibrate()
+		#self._gripper.set_moving_force(10)
 
-	def open(self):
-		self._gripper.open(block=True)
+	def close(self,left=True):
+		if left:
+			self._gripper.close(block=True)
+		else:
+			self._gripper_right.close(block=True)
 
-	def gripping(self):
-		return self._gripper.gripping()
+	def open(self,left=True):
+		if left:
+			self._gripper.open(block=True)
+		else:
+			self._gripper_right.open(block=True)
+
+	def gripping(self,left=True):
+		if left:
+			return self._gripper.gripping()
+		else:
+			return self._gripper_right.gripping()
