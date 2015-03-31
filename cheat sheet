@@ -1,0 +1,53 @@
+cd ~/ros_ws
+. baxter.sh
+
+--
+
+
+rosrun baxter_tools enable_robot.py -e
+
+cd ~/baxter_mark/abbe
+
+BLOCKS
+
+python abbe_block_demo.py
+
+PUPPET
+
+rosrun baxter_examples joint_velocity_puppet.py -l right
+
+STANDALONE EMOTIONS
+
+python abbe_standalone_emotions.py 
+
+--
+
+Turn off Sonar
+
+rostopic pub /robot/sonar/head_sonar/set_sonars_enabled std_msgs/UInt16 0
+
+--
+
+Tuck Arms
+
+untuck
+
+rosrun baxter_tools tuck_arms.py -u
+
+tuck
+
+rosrun baxter_tools tuck_arms.py -t
+
+-- 
+
+Waypoints example
+
+rosrun baxter_examples joint_position_waypoints.py -l right
+
+-- to tweak height offset for 2 tables:
+
+abbe_table.py look in function moveto_height_for_blockpickup()
+
+-- Camera Demo
+
+python abbe_camera_demo.py

@@ -30,9 +30,11 @@ class Abbe_Block_Finder(object):
 		self._bridge = CvBridge()
 		self._table = Abbe_Table()
 		self._table.default()
+		
+
+	def init_b(self):
 		cv2.namedWindow('Left Arm')
 		cv2.namedWindow('Right Arm')
-
 		# Instantiate all three cameras
 		# Only 2 cameras may be on at one time
 		try:
